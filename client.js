@@ -598,18 +598,60 @@ window.__ModuleLoader__.load({
 
     function SelfCard({ state, t, onCopy, copied }) {
       const self = state?.self;
+      const [open, setOpen] = React.useState(false);
+      const rootRef = React.useRef(null);
+
+      React.useEffect(() => {
+        if (!open) return undefined;
+        const closeOutside = (event) => {
+          if (!rootRef.current?.contains(event.target)) setOpen(false);
+        };
+        const closeOnEscape = (event) => {
+          if (event.key === 'Escape') setOpen(false);
+        };
+        document.addEventListener('pointerdown', closeOutside, true);
+        document.addEventListener('keydown', closeOnEscape);
+        return () => {
+          document.removeEventListener('pointerdown', closeOutside, true);
+          document.removeEventListener('keydown', closeOnEscape);
+        };
+      }, [open]);
+
       if (!self) return null;
-      return h('div', { className: 'dspl-self' },
-        h('div', { className: 'dspl-self-head' },
+
+      const closeOnBlur = (event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+      };
+
+      return h('div', {
+        className: `dspl-self${open ? ' open' : ''}`,
+        ref: rootRef,
+        onBlur: closeOnBlur,
+      },
+        h('button', {
+          type: 'button',
+          className: 'dspl-self-toggle',
+          onClick: () => setOpen((value) => !value),
+          'aria-expanded': open,
+          'aria-label': t('self'),
+        },
           h('span', { className: 'dspl-self-label' }, t('self')),
           h('span', { className: 'dspl-self-name', title: self.name }, self.name),
+          h(Icon, {
+            path: open ? 'M8 14l4-4 4 4' : 'M8 10l4 4 4-4',
+            size: 14,
+          }),
         ),
-        h('div', { className: 'dspl-mono' }, `#${String(self.instanceId || '').slice(0, 8)} · ${self.endpoint || '—'}`),
-        h('div', { className: 'dspl-mono dspl-muted' }, `${t('key')}: ${self.keyFingerprint || '—'}`),
-        h('button', { type: 'button', className: 'dspl-linkbtn', onClick: onCopy },
-          h(Icon, { path: 'M9 9h9v9H9z M6 15H4V4h11v2', size: 14 }),
-          h('span', null, copied ? t('copied') : t('copyInfo')),
-        ),
+        open
+          ? h('div', { className: 'dspl-self-body' },
+            h('div', { className: 'dspl-mono' }, `#${String(self.instanceId || '').slice(0, 8)} · ${self.endpoint || '—'}`),
+            h('div', { className: 'dspl-mono dspl-muted' }, `${t('key')}: ${self.keyFingerprint || '—'}`),
+            h('button', { type: 'button', className: 'dspl-linkbtn', onClick: onCopy },
+              h(Icon, { path: 'M9 9h9v9H9z M6 15H4V4h11v2', size: 14 }),
+              h('span', null, copied ? t('copied') : t('copyInfo')),
+            ),
+          )
+          : null,
       );
     }
 
@@ -1379,10 +1421,13 @@ window.__ModuleLoader__.load({
 .dspl-side-empty{padding:18px 12px;border:1px dashed var(--dsw-alias-border-l2);border-radius:10px;margin:8px 4px;color:var(--dsw-alias-label-secondary);font-size:12px;line-height:1.55}
 .dspl-side-empty strong{display:block;color:var(--dsw-alias-label-primary);font-size:13px;margin-bottom:5px}
 .dspl-side-empty p{margin:6px 0 0}
-.dspl-self{border-top:1px solid var(--dsw-alias-border-l1);padding:10px 14px 12px;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--dsw-alias-brand-primary) 4%,transparent))}
-.dspl-self-head{display:flex;align-items:baseline;gap:7px;min-width:0}
+.dspl-self{border-top:1px solid var(--dsw-alias-border-l1);padding:9px 14px 10px;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--dsw-alias-brand-primary) 4%,transparent))}
+.dspl-self-toggle{display:flex;align-items:center;gap:7px;width:100%;min-width:0;padding:2px 0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.dspl-self-toggle svg{flex:none;color:var(--dsw-alias-label-secondary)}
+.dspl-self-toggle:hover .dspl-self-name{color:var(--dsw-alias-brand-primary)}
 .dspl-self-label{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--dsw-alias-label-secondary);flex:none}
-.dspl-self-name{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dspl-self-name{flex:1;min-width:0;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dspl-self-body{padding-top:7px;display:flex;flex-direction:column;gap:2px}
 .dspl-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;color:var(--dsw-alias-label-secondary);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dspl-muted{color:var(--dsw-alias-label-secondary)}
 .dspl-linkbtn{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:0;border:0;background:transparent;color:var(--dsw-alias-brand-primary);font:inherit;font-size:11px;cursor:pointer}
