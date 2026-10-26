@@ -638,7 +638,7 @@ window.__ModuleLoader__.load({
           h('span', { className: 'dspl-self-label' }, t('self')),
           h('span', { className: 'dspl-self-name', title: self.name }, self.name),
           h(Icon, {
-            path: open ? 'M8 14l4-4 4 4' : 'M8 10l4 4 4-4',
+            path: open ? 'M8 10l4 4 4-4' : 'M8 14l4-4 4 4',
             size: 14,
           }),
         ),
