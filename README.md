@@ -2,22 +2,6 @@
 
 同一个 DeepSeek 账号下的多个 DeepSeek Harness 实例之间聊天、互发消息。连接方式是插件设置项，可多选：本机、局域网、手动节点、Cloudflare Worker 中继。默认只开本机回环，不会主动暴露端口。
 
-## 当前状态
-
-- 已安装并启用在 `desktop` profile，包名 `@local/dsh-peer-link`，版本 `1.0.0`。
-- 首次启用时暴露的 `peer_link_inbox` JSON Schema 错误已修复；当前模型请求正常，`peer_link_list` / `peer_link_send` / `peer_link_inbox` 已实际调用验证。
-- 插件设置页通过 `settings.section` 注册在左下角头像的「设置 → 实例互传」，包含 `transports` 多选、`relayUrl`、`relayToken`、`sharedSecret` 等字段。当前 desktop profile 没有 Host `settings` 服务，因此表单走插件自有 API，保存到 `%DSH_HOME%\peer-link\state\<profile>\settings.json`；GET/POST 已在运行中的实例上验证。
-- 本机双实例路径已用一个临时 peer 做过真实互通验证：发现、hello、在线/离线、收发消息、未读都通过。
-- AI 接管已实测：没有活跃 Agent 的测试实例用默认模型自动回复，回复带 `auto` 标记；唯一 Agent 会话时的注入路径也有单测覆盖。
-- 「AI 接管」按钮之前读的是 Node 构造时的旧快照，切换后界面不更新；现在 Host 的 `/state` 直接覆盖为当前 config，按钮状态与实际行为一致。
-- 修复「AI 接管」注入消息缺少 `id` / `role` 的问题：DSH 的 inbox 接受裸 `{ content, source }`，但下一步会把它写成匿名 `user/message`，随后所有模型请求报 `messages[...]: missing field role`，会话也会因校验失败无法加载。现在注入的是完整的带标识 user 消息（`id` + `role: "user"`），并有回归断言。
-- 设置页新增「接管会话」下拉（`autoReplySession`），可指定具体 Agent 会话；不选则自动选择唯一活跃会话，否则默认模型直答。
-- 设置页现在只注册在左下角头像的「设置 → 实例互传」；侧栏 Plugins 的插件行不再重复提供配置入口。
-- 实例身份现在按 profile 持久化到 `state/<profile>/instance-id`，重启复用同一个 instance id，不再每次重启在 peer 列表里新增一行。自动清理 10 分钟以上、没有聊天记录的离线 peer；有历史记录的旧 peer 可用面板底部的「清理离线」按钮删除。
-- Cloudflare Worker 中继已用 `wrangler dev` 本地验证（含离线队列），但尚未部署到真实 Cloudflare 账号。
-- 左侧栏「实例互传」图标已确认出现在真实页面；面板的完整视觉细节仍需在选中该面板后做最终验收。
-- 面板若显示「实例互传启动失败 / 请刷新页面」：这是旧页面 token 与重载后 Host 不匹配。现已加入同源 loopback fallback 和持久 `web-token`；刷新一次页面（Ctrl+R）即可。当前进程已加载新逻辑。
-
 ## 功能
 
 - 左侧栏气泡图标打开「实例互传」面板。
@@ -28,9 +12,21 @@
   - `peer_link_list`：列出可通信实例。
   - `peer_link_send`：向指定实例发消息。
   - `peer_link_inbox`：读取收到的消息，默认标为已读。
-- 只接受**同一 DeepSeek 账号**的实例；未登录时退化为同一操作系统用户 + 主机名的本机范围。
+- 默认只接受**同一 DeepSeek 账号**的实例；未登录时退化为同一操作系统用户 + 主机名的本机范围。
 - **AI 接管**：面板顶部可一键开启，收到的 peer 消息由本机智能体自动处理并回复。
 - 消息在传输中加密并签名；中继只转发密文信封。
+
+## 账号要求
+
+默认 `requireSameAccount: true`，只与同一 DeepSeek 账号的实例握手。这个账号 scope 只是**防误连的过滤条件**，真正认证消息的是双方共享的 `sharedSecret`，不是账号本身。
+
+确实需要跨账号通信时：
+
+1. 双方在设置里关闭「要求同账号」（`requireSameAccount: false`）；
+2. 双方配置相同的 `sharedSecret`；
+3. 使用 `local` / `lan` / `manual` 传输。
+
+当前 Cloudflare relay 按账号 scope 分 Durable Object 房间，所以不同账号即使关闭同账号要求，也不会进同一个 relay 房间；跨账号中继需要另行改 relay 的房间键。
 
 ## AI 接管
 
