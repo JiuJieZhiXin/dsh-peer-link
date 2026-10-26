@@ -1,0 +1,19 @@
+# Peer Link: one Host row plus one Client entry.
+#
+# All tunable fields are declared by the plugin's Config schema and appear in
+# the Plugins settings page. The same values can be written here:
+#   transports: [local, lan, manual, relay]
+#   name: "My desktop"        display name for this instance
+#   listenPort: 45873         fixed peer port (useful for manual/port-forwarded peers)
+#   udpPort: 45872            multicast discovery port
+#   sharedSecret: "..."       same passphrase on every machine that should pair
+#   manualPeers:              reachable peer origins for routed networks
+#     - "http://192.168.1.20:45873"
+#   relayUrl: "wss://dsh-peer-relay.<subdomain>.workers.dev/peer"
+#   relayToken: "..."         the Worker's RELAY_TOKEN secret
+#   requireSameAccount: true  reject instances signed in to another account
+#   maxMessages: 300          messages retained per conversation
+- insert:
+    - id: peer-link
+      name: '@local/dsh-peer-link'
+      config: {}

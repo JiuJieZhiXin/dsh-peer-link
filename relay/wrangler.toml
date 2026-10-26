@@ -1,0 +1,13 @@
+name = "dsh-peer-relay"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# One Durable Object per account scope. SQLite-backed classes are available on
+# the Workers Free plan and keep offline messages durable.
+[[durable_objects.bindings]]
+name = "PEER_ROOM"
+class_name = "PeerRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["PeerRoom"]
