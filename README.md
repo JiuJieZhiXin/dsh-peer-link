@@ -1,6 +1,6 @@
 # 实例互传 · Peer Link
 
-同一个 DeepSeek 账号下的多个 DeepSeek Harness 实例之间聊天、互发消息。连接方式是插件设置项，可多选：本机、局域网、手动节点、Cloudflare Worker 中继。默认只开本机回环，不会主动暴露端口。
+默认让同一个 DeepSeek 账号下的多个 DeepSeek Harness 实例之间聊天、互发消息；也支持双方共享 `sharedSecret` 后跨账号配对。连接方式是插件设置项，可多选：本机、局域网、手动节点、Cloudflare Worker 中继。默认只开本机回环，不会主动暴露端口。
 
 ## 功能
 
