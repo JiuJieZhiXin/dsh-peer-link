@@ -1433,15 +1433,22 @@ window.__ModuleLoader__.load({
 .dspl-settings-loading{flex-direction:row;align-items:center;color:var(--dsw-alias-label-secondary);font-size:12px}
 .dspl-settings-intro{margin:0;color:var(--dsw-alias-label-secondary);font-size:12.5px;line-height:1.6}
 .dspl-settings-section{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border:1px solid var(--dsw-alias-border-l1);border-radius:10px;background:var(--dsw-alias-bg-layer-1)}
+.dspl-settings-section > .dspl-input,
+.dspl-settings-section > .dspl-field{max-width:560px}
+.dspl-settings-section > .dspl-textarea{max-width:760px}
+.dspl-settings-section > .dspl-grid{max-width:640px}
+.dspl-settings-section .dspl-field > select.dspl-input{max-width:640px}
+.dspl-settings-section input[type="number"]{max-width:140px}
 .dspl-settings-section h3{margin:0;font-size:12.5px;font-weight:650;color:var(--dsw-alias-label-primary)}
 .dspl-settings-note{margin:0;color:var(--dsw-alias-label-secondary);font-size:11px;line-height:1.5}
 .dspl-settings-actions{display:flex;justify-content:flex-end;gap:8px;position:static;padding:8px 0 0;border-top:1px solid var(--dsw-alias-border-l1);background:transparent}
-.dspl-input{width:100%;height:32px;padding:0 10px;border:1px solid var(--dsw-alias-border-l1);border-radius:7px;background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);font:inherit;font-size:12.5px;outline:0}
+.dspl-settings-actions .dspl-primary{height:34px;min-width:84px}
+.dspl-input{width:100%;height:34px;padding:0 10px;border:1px solid var(--dsw-alias-border-l1);border-radius:7px;background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);font:inherit;font-size:12.5px;line-height:1.2;outline:0;box-sizing:border-box}
 .dspl-input:focus{border-color:color-mix(in srgb,var(--dsw-alias-brand-primary) 55%,var(--dsw-alias-border-l1))}
 .dspl-input::placeholder{color:var(--dsw-alias-label-secondary)}
-.dspl-textarea{height:auto;min-height:70px;padding:8px 10px;resize:vertical;line-height:1.5}
+.dspl-textarea{height:auto;min-height:84px;padding:8px 10px;resize:vertical;line-height:1.5}
 .dspl-grid{display:grid;gap:10px}
-.dspl-grid.three{grid-template-columns:minmax(0,2fr) repeat(2,minmax(0,1fr))}
+.dspl-grid.three{grid-template-columns:minmax(0,1fr) 140px 140px;max-width:640px}
 .dspl-field{display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--dsw-alias-label-secondary);min-width:0}
 .dspl-field-gap{margin-top:4px}
 .dspl-checks{display:flex;flex-wrap:wrap;gap:8px 16px}
